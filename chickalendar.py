@@ -1,0 +1,76 @@
+import pickle
+from datetime import datetime, timedelta
+
+def save_chickens(chickens):
+    with open("chickens.pkl", "wb") as f:
+        pickle.dump(chickens, f)
+
+def load_chickens():
+    try:
+        with open("chickens.pkl", "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return {}
+
+chickens = load_chickens()
+
+def add_chicken(name, dob):
+    age_in_weeks = (datetime.now() - dob).days // 7
+    chickens[name] = (dob, age_in_weeks)
+    print(f"{name} added to the database with date of birth {dob.strftime('%Y-%m-%d')} ({age_in_weeks} weeks old).")
+    save_chickens(chickens)
+
+def delete_chicken(name):
+    if name in chickens:
+        del chickens[name]
+        print(f"{name} deleted from the database.")
+        save_chickens(chickens)
+    else:
+        print(f"{name} not found in the database.")
+
+def show_chicken_age(name):
+    if name in chickens:
+        dob, age = chickens[name]
+        print(f"{name} is {age} weeks old (born on {dob.strftime('%Y-%m-%d')}).")
+    else:
+        print(f"{name} not found in the database.")
+
+def show_all_chickens():
+    if chickens:
+        print("Chickens in the database:")
+        for name, (dob, age) in chickens.items():
+            print(f"{name}: {age} weeks old (born on {dob.strftime('%Y-%m-%d')})")
+    else:
+        print("No chickens in the database.")
+
+while True:
+    print("""
+      .--.
+     (o.o) (Buckacckk!)
+      |=|
+      | |
+    // ||\\
+   //  || \\
+    🐓 Chicken Age Database 🐓
+    -------------------------
+    1. Add Chicken         🐥
+    2. Delete Chicken      💔
+    3. Show Chicken Age    🕒
+    4. Show All Chickens   🐓📜
+    5. Quit                ❌
+    """)
+    choice = int(input("Enter your choice (1-5): "))
+    if choice == 1:
+        name = input("Enter the chicken's name: ")
+        dob_str = input("Enter the chicken's date of birth (YYYY-MM-DD): ")
+        dob = datetime.strptime(dob_str, '%Y-%m-%d')
+        add_chicken(name, dob)
+    elif choice == 2:
+        name = input("Enter the chicken's name: ")
+        delete_chicken(name)
+    elif choice == 3:
+        name = input("Enter the chicken's name: ")
+        show_chicken_age(name)
+    elif choice == 4:
+        show_all_chickens()
+
